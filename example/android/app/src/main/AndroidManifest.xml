@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
         android:label="pax_player_example"
-        android:name="pax.plugin.pki.parhamkish.vakili.pax_player.DemoApp"
+        android:name="pax.plugin.pki.parhamkish.vakili.pax_player.PaxApp"
         android:extractNativeLibs="true"
         android:icon="@mipmap/ic_launcher">
         <activity

@@ -25,15 +25,11 @@ class MethodChannelPaxPlayer extends PaxPlayerPlatform {
     final deviceInfo = await methodChannel.invokeMethod<String>('getDeviceInfo');
     return deviceInfo;
   }
-  @override
-  Future<bool?> setDisableNavBar() async{
-    final setDisableNavBar = await methodChannel.invokeMethod<bool>('setDisableNavBar');
-    return setDisableNavBar;
-  }
+
 
   @override
-  Future<bool?> setEnableNavBar() async{
-    final setEnableNavBar = await methodChannel.invokeMethod<bool>('setEnableNavBar');
+  Future<bool?> setEnableNavBar(bool state) async{
+    final setEnableNavBar = await methodChannel.invokeMethod<bool>('setEnableNavBar',{"state":state});
     return setEnableNavBar;
   }
 }

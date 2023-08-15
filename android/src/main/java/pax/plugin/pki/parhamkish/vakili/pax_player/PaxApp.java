@@ -8,7 +8,7 @@ import android.widget.Toast;
 import com.pax.dal.IDAL;
 import com.pax.neptunelite.api.NeptuneLiteUser;
 
-public class DemoApp extends Application {
+public class PaxApp extends Application {
 
     private static IDAL dal;
     private static Context appContext;

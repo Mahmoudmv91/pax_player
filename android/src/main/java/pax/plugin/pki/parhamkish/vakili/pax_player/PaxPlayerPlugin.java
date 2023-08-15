@@ -15,8 +15,8 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
-import module.MagTester;
-import module.SysTester;
+import module.MagPax;
+import module.SysPax;
 
 /**
  * PaxPlayerPlugin
@@ -41,14 +41,14 @@ public class PaxPlayerPlugin implements FlutterPlugin, MethodCallHandler {
     public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
 
         if (call.method.equals("getCardNumber")) {
-            MagTester.getInstance().open();
-            MagTester.getInstance().reset();
+            MagPax.getInstance().open();
+            MagPax.getInstance().reset();
             Handler handler = new Handler(Looper.getMainLooper());
             Thread thread = new Thread(() -> {
                 try {
                     while (!Thread.interrupted()) {
-                        if (MagTester.getInstance().isSwiped()) {
-                            TrackData trackData = MagTester.getInstance().read();
+                        if (MagPax.getInstance().isSwiped()) {
+                            TrackData trackData = MagPax.getInstance().read();
                             if (trackData != null) {
                                 String resStr = "";
                                 if (trackData.getResultCode() == 0) {
@@ -93,7 +93,7 @@ public class PaxPlayerPlugin implements FlutterPlugin, MethodCallHandler {
         } else if (call.method.equals("getBeep")) {
             int delayTime = call.argument("time");
             try {
-                SysTester.getInstance().beep(EBeepMode.FREQUENCE_LEVEL_6, delayTime);
+                SysPax.getInstance().beep(EBeepMode.FREQUENCE_LEVEL_6, delayTime);
                 result.success(true);
             } catch (Exception error) {
                 Log.i("beep-pax", error.toString());
@@ -101,38 +101,27 @@ public class PaxPlayerPlugin implements FlutterPlugin, MethodCallHandler {
         } else if (call.method.equals("getDeviceInfo")) {
             try {
 
-                final String info = SysTester.getInstance().getTerminfo();
+                final String info = SysPax.getInstance().getTerminfo();
 
                 result.success(info);
             } catch (Exception error) {
                 Log.i("beep-pax", error.toString());
             }
-        } else if (call.method.equals("setDisableNavBar")) {
-            try {
-
-                SysTester.getInstance().showNavigationBar(false);
-                SysTester.getInstance().enableNavigationBar(false);
-                SysTester.getInstance().showStatusBar(false);
-                SysTester.getInstance().enableStatusBar(false);
-
-
-                result.success(true);
-            } catch (Exception error) {
-                Log.i("beep-pax", error.toString());
-            }
         } else if (call.method.equals("setEnableNavBar")) {
+            boolean state=call.argument("state");
             try {
 
-                SysTester.getInstance().showNavigationBar(true);
+                SysPax.getInstance().showNavigationBar(state);
+                SysPax.getInstance().enableNavigationBar(state);
+                SysPax.getInstance().showStatusBar(state);
+                SysPax.getInstance().enableStatusBar(state);
 
-                SysTester.getInstance().enableNavigationBar(true);
-                SysTester.getInstance().resetStatusBar();
 
                 result.success(true);
             } catch (Exception error) {
                 Log.i("beep-pax", error.toString());
             }
-        } else {
+        }  else {
             result.notImplemented();
         }
 

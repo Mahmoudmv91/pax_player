@@ -2,11 +2,11 @@ package utils;
 
 import android.util.Log;
 
-public class BaseTester {
+public class BasePax {
 
     private String childName = "";
 
-    public BaseTester() {
+    public BasePax() {
         
     }
 

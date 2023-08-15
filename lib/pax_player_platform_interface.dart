@@ -26,19 +26,16 @@ abstract class PaxPlayerPlatform extends PlatformInterface {
   Future<String?> getCardNumber() {
     throw UnimplementedError('getCardNumber has not been implemented.');
   }
+
+  Future<String?> getDeviceInfo() {
+    throw UnimplementedError('getDeviceInfo has not been implemented.');
+  }
+
   Future<bool?> getBeep(int time) {
     throw UnimplementedError('getBeep has not been implemented.');
   }
-  // Future<bool?> getBeep500() {
-  //   throw UnimplementedError('getBeep has not been implemented.');
-  // }
-  Future<bool?> setDisableNavBar() {
-    throw UnimplementedError('setDisableNavBar has not been implemented.');
-  }
-  Future<bool?> setEnableNavBar() {
+
+  Future<bool?> setEnableNavBar(bool state) {
     throw UnimplementedError('setEnableNavBar has not been implemented.');
-  }
-  Future<String?> getDeviceInfo() {
-    throw UnimplementedError('getDeviceInfo has not been implemented.');
   }
 }

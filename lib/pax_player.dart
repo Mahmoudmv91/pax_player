@@ -5,20 +5,15 @@ class PaxPlayer {
     return PaxPlayerPlatform.instance.getCardNumber();
   }
 
-  Future<bool?> getBeep(int time) {
-    return PaxPlayerPlatform.instance.getBeep(time);
-  }
-
-
   Future<String?> getDeviceInfo() {
     return PaxPlayerPlatform.instance.getDeviceInfo();
   }
 
-  Future<bool?> setDisableNavBar() {
-    return PaxPlayerPlatform.instance.setDisableNavBar();
+  Future<bool?> getBeep(int time) {
+    return PaxPlayerPlatform.instance.getBeep(time);
   }
 
-  Future<bool?> setEnableNavBar() {
-    return PaxPlayerPlatform.instance.setEnableNavBar();
+  Future<bool?> setEnableNavBar(bool state) {
+    return PaxPlayerPlatform.instance.setEnableNavBar(state);
   }
 }

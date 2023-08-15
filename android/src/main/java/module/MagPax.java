@@ -6,25 +6,25 @@ import com.pax.dal.IMag;
 import com.pax.dal.entity.TrackData;
 import com.pax.dal.exceptions.MagDevException;
 
-import pax.plugin.pki.parhamkish.vakili.pax_player.DemoApp;
-import utils.BaseTester;
+import pax.plugin.pki.parhamkish.vakili.pax_player.PaxApp;
+import utils.BasePax;
 
-public class MagTester extends BaseTester {
+public class MagPax extends BasePax {
 
-    private static MagTester magTester;
+    private static MagPax magPax;
 
     private IMag iMag;
 
-    private MagTester() {
-        iMag = DemoApp.getDal().getMag();
+    private MagPax() {
+        iMag = PaxApp.getDal().getMag();
     }
 
-    public static MagTester getInstance() {
-        if (magTester == null) {
-            magTester = new MagTester();
+    public static MagPax getInstance() {
+        if (magPax == null) {
+            magPax = new MagPax();
 
         }
-        return magTester;
+        return magPax;
     }
 
     public void open() {

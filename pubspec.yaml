@@ -2,7 +2,7 @@ name: pax_player
 description: This package based on PAX Device with NetptuneLiteApi SDK
 Important:
   THIS PACKAGE WILL WORK ONLY IN ANDROID!
-version: 0.0.1
+version: 0.0.4
 homepage: https://github.com/Mahmoudmv91/pax_player
 
 environment:

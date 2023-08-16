@@ -8,7 +8,7 @@
 ## Installation
 
 ```bash
-flutter pub add flutter_pax_printer_utility
+flutter pub add pax_player
 ```
 
 
@@ -28,13 +28,14 @@ buildTypes {
 ```
 ## Set this line on your AndroidManifest xml
 
-...bash
+```bash
+add this line in your build.gradle
 <application
 ...
 android:name="pax.plugin.pki.parhamkish.vakili.pax_player.PaxApp"
 ...
 </application>
-...
+```
 
 
 
@@ -42,13 +43,15 @@ android:name="pax.plugin.pki.parhamkish.vakili.pax_player.PaxApp"
 - [✅] Get DeviceInfo => use getDeviceInfo
 - [✅] Get CardInfo => use getCardNumber
 - [✅] Get Beep device => use getBeep
-- [✅] Set Device Nav Bar enable => use setDisableNavBar set false
-- [✅] Set Device Nav Bar disable => use setDisableNavBar set true
+- [✅] Set Device Nav Bar enable => use setEnableNavBar set true
 
-- [ ] Draw a divisor line
+- [ ] get all device info
+- [ ] call printer
+- [ ] device setting
+- [ ] call scanner 
 
 
-## If you have an Pax Terminal printer and need help with integration process, just [Contact Me](https://saweria.co/overlays/qr?streamKey=54dc04b8045bb0355cde915ab1bb85b5&topLabel=MAHA&bottomLabel=Buy+Me+A+Coffe&backgroundColor=%232b9dfaFF&barcodeColor=%23000&username=maha)
+## If you have an Pax Terminal printer and need help with integration process, just Contact me
 
 - [Github](https://github.com/Mahmoudmv91)
 - [Email](mailto:mahmoudmv1991@gmail.com)

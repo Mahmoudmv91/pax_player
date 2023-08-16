@@ -102,6 +102,7 @@ public class PaxPlayerPlugin implements FlutterPlugin, MethodCallHandler {
             try {
 
                 final String info = SysPax.getInstance().getTerminfo();
+                final String device=
 
                 result.success(info);
             } catch (Exception error) {

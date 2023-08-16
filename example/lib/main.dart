@@ -260,6 +260,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _cardNumber = number;
     });
+    await PaxPlayer().getBeep(100);
   }
 
   Future<void> _getDeviceInfo() async {

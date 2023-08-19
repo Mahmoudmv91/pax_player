@@ -29,7 +29,7 @@ buildTypes {
 ## Set this line on your AndroidManifest xml
 
 ```bash
-add this line in your build.gradle
+add this line in your AndroidManifest.xml
 <application
 ...
 android:name="pax.plugin.pki.parhamkish.vakili.pax_player.PaxApp"

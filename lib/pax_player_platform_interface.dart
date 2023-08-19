@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'pax_player_method_channel.dart';
@@ -37,5 +39,21 @@ abstract class PaxPlayerPlatform extends PlatformInterface {
 
   Future<bool?> setEnableNavBar(bool state) {
     throw UnimplementedError('setEnableNavBar has not been implemented.');
+  }
+
+  Future<bool?> initPrinter() {
+    throw UnimplementedError('initPrinter has not been implemented.');
+  }
+  Future<String?> getStatusPrinter() {
+    throw UnimplementedError('getStatusPrinter has not been implemented.');
+  }
+  Future<String?> printReceipt() {
+    throw UnimplementedError('printReceipt has not been implemented.');
+  }
+  Future<String?> printReceiptWithQr() {
+    throw UnimplementedError('printReceiptWithQr has not been implemented.');
+  }
+  Future<bool?> printBitmap(Uint8List bitmap) {
+    throw UnimplementedError('printBitmap has not been implemented.');
   }
 }

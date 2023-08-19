@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'pax_player_platform_interface.dart';
 
 class PaxPlayer {
@@ -15,5 +17,22 @@ class PaxPlayer {
 
   Future<bool?> setEnableNavBar(bool state) {
     return PaxPlayerPlatform.instance.setEnableNavBar(state);
+  }
+}
+class PaxPrinter{
+  Future<bool?> initPrinter() {
+    return PaxPlayerPlatform.instance.initPrinter();
+  }
+  Future<String?> getStatusPrinter() {
+    return PaxPlayerPlatform.instance.getStatusPrinter();
+  }
+  Future<String?> printReceipt() {
+    return PaxPlayerPlatform.instance.printReceipt();
+  }
+  Future<String?> printReceiptWithQr() {
+    return PaxPlayerPlatform.instance.printReceiptWithQr();
+  }
+  Future<bool?> printBitmap(Uint8List bitmap) {
+    return PaxPlayerPlatform.instance.printBitmap(bitmap);
   }
 }

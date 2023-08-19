@@ -1,5 +1,9 @@
 package pax.plugin.pki.parhamkish.vakili.pax_player;
 
+import static java.lang.Byte.parseByte;
+
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
@@ -8,7 +12,11 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.pax.dal.entity.EBeepMode;
+import com.pax.dal.entity.EFontTypeAscii;
+import com.pax.dal.entity.EFontTypeExtCode;
 import com.pax.dal.entity.TrackData;
+
+import java.util.Arrays;
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.MethodCall;
@@ -16,7 +24,9 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import module.MagPax;
+import module.PrinterPax;
 import module.SysPax;
+import utils.QRCodeUtil;
 
 /**
  * PaxPlayerPlugin
@@ -28,6 +38,8 @@ public class PaxPlayerPlugin implements FlutterPlugin, MethodCallHandler {
     /// This local reference serves to register the plugin with the Flutter Engine and unregister it
     /// when the Flutter Engine is detached from the Activity
     private MethodChannel channel;
+    private static PrinterPax printerPax;
+    private static QRCodeUtil qrCodeUtil;
     static String cardNumber = "کارت را بکشید";
     private static final String CHANNEL = "pax.plugin.pki.parhamkish.vakili.pax_player/pax_reader";
 
@@ -35,6 +47,9 @@ public class PaxPlayerPlugin implements FlutterPlugin, MethodCallHandler {
     public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
         channel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), CHANNEL);
         channel.setMethodCallHandler(this);
+        printerPax= PrinterPax.getInstance();
+        qrCodeUtil=new QRCodeUtil();
+
     }
 
     @Override
@@ -102,14 +117,14 @@ public class PaxPlayerPlugin implements FlutterPlugin, MethodCallHandler {
             try {
 
                 final String info = SysPax.getInstance().getTerminfo();
-                final String device=
 
-                result.success(info);
+
+                        result.success(info);
             } catch (Exception error) {
                 Log.i("beep-pax", error.toString());
             }
         } else if (call.method.equals("setEnableNavBar")) {
-            boolean state=call.argument("state");
+            boolean state = call.argument("state");
             try {
 
                 SysPax.getInstance().showNavigationBar(state);
@@ -122,6 +137,59 @@ public class PaxPlayerPlugin implements FlutterPlugin, MethodCallHandler {
             } catch (Exception error) {
                 Log.i("beep-pax", error.toString());
             }
+        } else if (call.method.equals("init")) {
+            printerPax.init();
+            result.success(true);
+
+        }else if (call.method.equals("getStatus")) {
+            String status = printerPax.getStatus();
+            result.success(status);
+
+        }else if (call.method.equals("printBitmap")) {
+            Log.i("paxxx","ok");
+            byte[] bytes = call.argument("bitmap");
+            Log.i("paxxx","ok2");
+            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+            Log.i("paxxx","ok3");
+            printerPax.printBitmap(bitmap);
+            Log.i("paxxx","ok4");
+            result.success(true);
+            Log.i("paxxx","ok5");
+            Log.i("paxxx", Arrays.toString(bytes));
+
+        }else if (call.method.equals("printReceipt")) {
+//            String content = call.argument("content");
+
+            printerPax.init();
+            printerPax.fontSet(EFontTypeAscii.FONT_8_16, EFontTypeExtCode.FONT_16_16);
+            printerPax.spaceSet(parseByte("0"), parseByte("10"));
+            printerPax.setGray(1);
+//            printerPax.printStr("پرینت تست حروف فارسی", "utf-8");
+//            printerPax.printStr("", null);
+            printerPax.printBitmap(QRCodeUtil.encodeAsBitmap("پرینت تست حروف فارسی", 512, 512 ));
+            printerPax.printStr("", null);
+            printerPax.step(150);
+            final String status = printerPax.start();
+            result.success(status);
+
+        }else if (call.method.equals("printReceiptWithQr")) {
+            String content = call.argument("content");
+            String qrContent = call.argument("qr_content");
+
+            printerPax.init();
+            printerPax.fontSet(EFontTypeAscii.FONT_8_16, EFontTypeExtCode.FONT_16_16);
+            printerPax.spaceSet(parseByte("0"), parseByte("10"));
+            printerPax.setGray(1);
+            printerPax.printStr(content, null);
+            printerPax.printStr("", null);
+            if (qrContent != null) {
+                printerPax.printBitmap(QRCodeUtil.encodeAsBitmap(qrContent, 512, 512 ));
+                printerPax.printStr("", null);
+            }
+            printerPax.step(150);
+            final String status = printerPax.start();
+            result.success(status);
+
         }  else {
             result.notImplemented();
         }

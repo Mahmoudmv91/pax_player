@@ -32,4 +32,29 @@ class MethodChannelPaxPlayer extends PaxPlayerPlatform {
     final setEnableNavBar = await methodChannel.invokeMethod<bool>('setEnableNavBar',{"state":state});
     return setEnableNavBar;
   }
+  @override
+  Future<bool?> initPrinter() async {
+    final initPrinter = await methodChannel.invokeMethod<bool>('init');
+    return initPrinter;
+  }
+  @override
+  Future<String?> getStatusPrinter() async {
+    final getStatusPrinter = await methodChannel.invokeMethod<String>('getStatus');
+    return getStatusPrinter;
+  }
+  @override
+  Future<String?> printReceipt() async {
+    final printReceipt = await methodChannel.invokeMethod<String>('printReceipt');
+    return printReceipt;
+  }
+  @override
+  Future<String?> printReceiptWithQr() async {
+    final printReceiptWithQr = await methodChannel.invokeMethod<String>('printReceiptWithQr');
+    return printReceiptWithQr;
+  }
+  @override
+  Future<bool?> printBitmap(Uint8List bitmap) async {
+    final printBitmap = await methodChannel.invokeMethod<bool>('printBitmap',{"bitmap":bitmap});
+    return printBitmap;
+  }
 }

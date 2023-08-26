@@ -35,4 +35,13 @@ class PaxPrinter{
   Future<bool?> printBitmap(Uint8List bitmap) {
     return PaxPlayerPlatform.instance.printBitmap(bitmap);
   }
+  Future<bool?> printNormal() {
+    return PaxPlayerPlatform.instance.printNormal();
+  }
+  Future<String?> start() {
+    return PaxPlayerPlatform.instance.start();
+  }
+  Future<bool?> setGray(int level) {
+    return PaxPlayerPlatform.instance.setGray(level);
+  }
 }

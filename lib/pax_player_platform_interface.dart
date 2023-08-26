@@ -56,4 +56,13 @@ abstract class PaxPlayerPlatform extends PlatformInterface {
   Future<bool?> printBitmap(Uint8List bitmap) {
     throw UnimplementedError('printBitmap has not been implemented.');
   }
+  Future<bool?> printNormal() {
+    throw UnimplementedError('printNormal has not been implemented.');
+  }
+  Future<String?> start() {
+    throw UnimplementedError('start has not been implemented.');
+  }
+  Future<bool?> setGray(int level) {
+    throw UnimplementedError('setGray has not been implemented.');
+  }
 }

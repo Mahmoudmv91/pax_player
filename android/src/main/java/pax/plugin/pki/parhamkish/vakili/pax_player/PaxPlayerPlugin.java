@@ -4,6 +4,7 @@ import static java.lang.Byte.parseByte;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
@@ -15,8 +16,6 @@ import com.pax.dal.entity.EBeepMode;
 import com.pax.dal.entity.EFontTypeAscii;
 import com.pax.dal.entity.EFontTypeExtCode;
 import com.pax.dal.entity.TrackData;
-
-import java.util.Arrays;
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.MethodCall;
@@ -47,151 +46,200 @@ public class PaxPlayerPlugin implements FlutterPlugin, MethodCallHandler {
     public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
         channel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), CHANNEL);
         channel.setMethodCallHandler(this);
-        printerPax= PrinterPax.getInstance();
-        qrCodeUtil=new QRCodeUtil();
+        printerPax = PrinterPax.getInstance();
+        qrCodeUtil = new QRCodeUtil();
 
     }
 
     @Override
     public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
 
-        if (call.method.equals("getCardNumber")) {
-            MagPax.getInstance().open();
-            MagPax.getInstance().reset();
-            Handler handler = new Handler(Looper.getMainLooper());
-            Thread thread = new Thread(() -> {
-                try {
-                    while (!Thread.interrupted()) {
-                        if (MagPax.getInstance().isSwiped()) {
-                            TrackData trackData = MagPax.getInstance().read();
-                            if (trackData != null) {
-                                String resStr = "";
-                                if (trackData.getResultCode() == 0) {
-                                    resStr = "خطا";
+        switch (call.method) {
+            case "getCardNumber":
+                MagPax.getInstance().open();
+                MagPax.getInstance().reset();
+                Handler handler = new Handler(Looper.getMainLooper());
+                Thread thread = new Thread(() -> {
+                    try {
+                        while (!Thread.interrupted()) {
+                            if (MagPax.getInstance().isSwiped()) {
+                                TrackData trackData = MagPax.getInstance().read();
+                                if (trackData != null) {
+                                    String resStr = "";
+                                    if (trackData.getResultCode() == 0) {
+                                        resStr = "خطا";
 
-                                    cardNumber = resStr;
+                                        cardNumber = resStr;
 
-                                    continue;
+                                        continue;
+                                    }
+                                    if ((trackData.getResultCode() & 0x01) == 0x01) {
+                                        resStr += trackData.getTrack1();
+
+                                        cardNumber = resStr;
+                                    }
+                                    if ((trackData.getResultCode() & 0x02) == 0x02) {
+                                        resStr += trackData.getTrack2();
+
+                                        cardNumber = resStr;
+                                    }
+                                    if ((trackData.getResultCode() & 0x04) == 0x04) {
+                                        resStr += trackData.getTrack3();
+
+                                        cardNumber = resStr;
+                                    }
+
+                                    final String finalResStr = resStr;
+                                    handler.post(() -> result.success(finalResStr));
+                                    break;
                                 }
-                                if ((trackData.getResultCode() & 0x01) == 0x01) {
-                                    resStr += trackData.getTrack1();
 
-                                    cardNumber = resStr;
-                                }
-                                if ((trackData.getResultCode() & 0x02) == 0x02) {
-                                    resStr += trackData.getTrack2();
-
-                                    cardNumber = resStr;
-                                }
-                                if ((trackData.getResultCode() & 0x04) == 0x04) {
-                                    resStr += trackData.getTrack3();
-
-                                    cardNumber = resStr;
-                                }
-
-                                final String finalResStr = resStr;
-                                handler.post(() -> result.success(finalResStr));
-                                break;
                             }
 
+
+                            SystemClock.sleep(100);
                         }
 
-
-                        SystemClock.sleep(100);
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-
-                } catch (Exception e) {
-                    e.printStackTrace();
+                });
+                thread.start();
+                break;
+            case "getBeep":
+                int delayTime = call.argument("time");
+                try {
+                    SysPax.getInstance().beep(EBeepMode.FREQUENCE_LEVEL_6, delayTime);
+                    result.success(true);
+                } catch (Exception error) {
+                    Log.i("beep-pax", error.toString());
                 }
-            });
-            thread.start();
-        } else if (call.method.equals("getBeep")) {
-            int delayTime = call.argument("time");
-            try {
-                SysPax.getInstance().beep(EBeepMode.FREQUENCE_LEVEL_6, delayTime);
+                break;
+            case "getDeviceInfo":
+                try {
+
+                    final String info = SysPax.getInstance().getTerminfo();
+
+
+                    result.success(info);
+                } catch (Exception error) {
+                    Log.i("beep-pax", error.toString());
+                }
+                break;
+            case "setEnableNavBar":
+                boolean state = Boolean.TRUE.equals(call.argument("state"));
+                try {
+
+                    SysPax.getInstance().showNavigationBar(state);
+                    SysPax.getInstance().enableNavigationBar(state);
+                    SysPax.getInstance().showStatusBar(state);
+                    SysPax.getInstance().enableStatusBar(state);
+
+
+                    result.success(true);
+                } catch (Exception error) {
+                    Log.i("beep-pax", error.toString());
+                }
+                break;
+            case "init":
+                printerPax.init();
                 result.success(true);
-            } catch (Exception error) {
-                Log.i("beep-pax", error.toString());
+
+                break;
+            case "getStatus": {
+                String status = printerPax.getStatus();
+                result.success(status);
+
+                break;
             }
-        } else if (call.method.equals("getDeviceInfo")) {
-            try {
-
-                final String info = SysPax.getInstance().getTerminfo();
+            case "start": {
 
 
-                        result.success(info);
-            } catch (Exception error) {
-                Log.i("beep-pax", error.toString());
+                final String status = printerPax.start();
+                result.success(status);
+
+
+                break;
             }
-        } else if (call.method.equals("setEnableNavBar")) {
-            boolean state = call.argument("state");
-            try {
-
-                SysPax.getInstance().showNavigationBar(state);
-                SysPax.getInstance().enableNavigationBar(state);
-                SysPax.getInstance().showStatusBar(state);
-                SysPax.getInstance().enableStatusBar(state);
+            case "setGray":
 
 
+                int level = call.argument("level");
+                printerPax.setGray(level);
                 result.success(true);
-            } catch (Exception error) {
-                Log.i("beep-pax", error.toString());
-            }
-        } else if (call.method.equals("init")) {
-            printerPax.init();
-            result.success(true);
 
-        }else if (call.method.equals("getStatus")) {
-            String status = printerPax.getStatus();
-            result.success(status);
 
-        }else if (call.method.equals("printBitmap")) {
-            Log.i("paxxx","ok");
-            byte[] bytes = call.argument("bitmap");
-            Log.i("paxxx","ok2");
-            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-            Log.i("paxxx","ok3");
-            printerPax.printBitmap(bitmap);
-            Log.i("paxxx","ok4");
-            result.success(true);
-            Log.i("paxxx","ok5");
-            Log.i("paxxx", Arrays.toString(bytes));
+                break;
+            case "printBitmap":
 
-        }else if (call.method.equals("printReceipt")) {
+
+                byte[] bytes = call.argument("bitmap");
+                assert bytes != null;
+                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                printerPax.printBitmap(bitmap);
+                printerPax.printStr("\n\n\n\n\n", null);
+                result.success(true);
+
+
+                break;
+            case "printNormal":
+
+                Log.i("paxxx", "ok");
+//            printerPax.init();
+                printerPax.fontSet(EFontTypeAscii.FONT_8_16, EFontTypeExtCode.FONT_16_16);
+//            printerPax.setGray(1);
+
+                Log.i("paxxx", "ok3");
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    printerPax.printStr("تست فارسی", null);
+                    printerPax.start();
+                    Log.i("paxxx", "ok4");
+                }
+                result.success(true);
+                Log.i("paxxx", "ok5");
+
+
+                break;
+            case "printReceipt": {
 //            String content = call.argument("content");
 
-            printerPax.init();
-            printerPax.fontSet(EFontTypeAscii.FONT_8_16, EFontTypeExtCode.FONT_16_16);
-            printerPax.spaceSet(parseByte("0"), parseByte("10"));
-            printerPax.setGray(1);
+                printerPax.init();
+                printerPax.fontSet(EFontTypeAscii.FONT_8_16, EFontTypeExtCode.FONT_16_16);
+                printerPax.spaceSet(parseByte("0"), parseByte("10"));
+                printerPax.setGray(1);
 //            printerPax.printStr("پرینت تست حروف فارسی", "utf-8");
 //            printerPax.printStr("", null);
-            printerPax.printBitmap(QRCodeUtil.encodeAsBitmap("پرینت تست حروف فارسی", 512, 512 ));
-            printerPax.printStr("", null);
-            printerPax.step(150);
-            final String status = printerPax.start();
-            result.success(status);
-
-        }else if (call.method.equals("printReceiptWithQr")) {
-            String content = call.argument("content");
-            String qrContent = call.argument("qr_content");
-
-            printerPax.init();
-            printerPax.fontSet(EFontTypeAscii.FONT_8_16, EFontTypeExtCode.FONT_16_16);
-            printerPax.spaceSet(parseByte("0"), parseByte("10"));
-            printerPax.setGray(1);
-            printerPax.printStr(content, null);
-            printerPax.printStr("", null);
-            if (qrContent != null) {
-                printerPax.printBitmap(QRCodeUtil.encodeAsBitmap(qrContent, 512, 512 ));
+                printerPax.printBitmap(QRCodeUtil.encodeAsBitmap("پرینت تست حروف فارسی", 512, 512));
                 printerPax.printStr("", null);
-            }
-            printerPax.step(150);
-            final String status = printerPax.start();
-            result.success(status);
+                printerPax.step(150);
+                final String status = printerPax.start();
+                result.success(status);
 
-        }  else {
-            result.notImplemented();
+                break;
+            }
+            case "printReceiptWithQr": {
+                String content = call.argument("content");
+                String qrContent = call.argument("qr_content");
+
+                printerPax.init();
+                printerPax.fontSet(EFontTypeAscii.FONT_8_16, EFontTypeExtCode.FONT_16_16);
+                printerPax.spaceSet(parseByte("0"), parseByte("10"));
+                printerPax.setGray(1);
+                printerPax.printStr(content, null);
+                printerPax.printStr("", null);
+                if (qrContent != null) {
+                    printerPax.printBitmap(QRCodeUtil.encodeAsBitmap(qrContent, 512, 512));
+                    printerPax.printStr("", null);
+                }
+                printerPax.step(150);
+                final String status = printerPax.start();
+                result.success(status);
+
+                break;
+            }
+            default:
+                result.notImplemented();
+                break;
         }
 
     }

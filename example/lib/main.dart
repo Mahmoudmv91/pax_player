@@ -1,6 +1,4 @@
-import 'dart:developer';
 import 'dart:ui' as ui;
-
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -36,9 +34,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String? _cardNumber = 'Unknown card number.';
-  String? _deviceInfo = 'Unknown device.';
   final GlobalKey _globalKey = GlobalKey();
+  bool isLoading = false;
 
   Future<Uint8List?> _capturePng() async {
     try {
@@ -57,120 +54,39 @@ class _MyHomePageState extends State<MyHomePage> {
     return null;
   }
 
-  Future<void> _getCardNumber() async {
-    setState(() {
-      _cardNumber = 'swipe the card';
-    });
-    String? number;
-
-    try {
-      String? result = await PaxPlayer().getCardNumber();
-      if (result != null) {
-        number = result;
-      }
-    } on PlatformException catch (e) {
-      number = "Failed to get card number: '${e.message}'.";
+  Future<void> _printReceiptBitmap() async {
+    // setState(() => isLoading = true);
+    Uint8List? bitmapWidget = await _capturePng();
+    if (bitmapWidget != null) {
+      await PaxPrinter().initPrinter();
+      await PaxPrinter().setGray(3);
+      await PaxPrinter().printBitmap(bitmapWidget);
+      await PaxPrinter().start();
+      // await PaxPrinter().print("\n\n\n", null);
+      // await FlutterPaxPrinterUtility.init;
+      // await FlutterPaxPrinterUtility.setGray(3);
+      // await FlutterPaxPrinterUtility.printBitmap(bitmapWidget);
+      // await FlutterPaxPrinterUtility.printStr("\n\n\n\n", null);
+      // await FlutterPaxPrinterUtility.start();
     }
-    if (!mounted) return;
-    setState(() {
-      _cardNumber = number;
-    });
-    await PaxPlayer().getBeep(100);
-  }
-
-  Future<void> _getDeviceInfo() async {
-    String? device;
-    try {
-      String? result = await PaxPlayer().getDeviceInfo();
-      if (result != null) {
-        device = result;
-      }
-    } on PlatformException catch (e) {
-      device = "Failed to get device info: '${e.message}'.";
-    }
-    if (!mounted) return;
-    setState(() {
-      _deviceInfo = device;
-    });
-  }
-
-  Future<void> _print() async {
-    final a = await PaxPrinter().initPrinter();
-    if (a != null && a) {
-      String? status = await PaxPrinter().getStatusPrinter();
-      log(status.toString());
-      Uint8List? bitmapWidget = await _capturePng();
-      if (bitmapWidget != null) {
-        await PaxPrinter().printBitmap(bitmapWidget);
-      }
-      // await PaxPrinter().printReceipt();
-    }
-  }
-
-  @override
-  void initState() {
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await PaxPlayer().setEnableNavBar(true);
-      _getDeviceInfo();
-      _getCardNumber();
-    });
-    super.initState();
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.landscapeRight,
-    ]);
-  }
-
-  @override
-  void dispose() {
-    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-    super.dispose();
+    // setState(() => isLoading = false);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
-        centerTitle: true,
+        title: const Text("Print From Bitmap"),
+        actions: [
+          IconButton(onPressed: _printReceiptBitmap, icon: const Icon(Icons.print)),
+        ],
       ),
       body: RepaintBoundary(
         key: _globalKey,
-        child: Center(
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Text(
-                  'تست پرینت حروف فارسی',
-                  style: TextStyle(fontSize: 20),
-                ),
-                Text(
-                  _deviceInfo ?? 'Unknown device info',
-                  style: const TextStyle(fontSize: 20),
-                ),
-                Text(
-                  _cardNumber ?? 'Unknown card number',
-                  style: const TextStyle(fontSize: 50),
-                  textAlign: TextAlign.center,
-                ),
-                TextButton(
-                  onPressed: () {
-                    _getDeviceInfo();
-                    _getCardNumber();
-                  },
-                  child: const Text("Reset", style: TextStyle(fontSize: 40)),
-                ),
-                TextButton(
-                  onPressed: () {
-                    _print();
-                  },
-                  child: const Text("Print", style: TextStyle(fontSize: 40)),
-                ),
-              ],
-            ),
+        child: Container(
+          decoration: const BoxDecoration(color: Colors.white),
+          child: const Center(
+            child: Text('تست فارسی'),
           ),
         ),
       ),

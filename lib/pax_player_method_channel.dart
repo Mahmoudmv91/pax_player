@@ -57,4 +57,21 @@ class MethodChannelPaxPlayer extends PaxPlayerPlatform {
     final printBitmap = await methodChannel.invokeMethod<bool>('printBitmap',{"bitmap":bitmap});
     return printBitmap;
   }
+  @override
+  Future<bool?> printNormal() async{
+
+    final printNormal = await methodChannel.invokeMethod<bool>('printNormal');
+    return printNormal;
+  }
+
+  @override
+  Future<String?> start() async {
+    final start = await methodChannel.invokeMethod<String>('start');
+    return start;
+  }
+  @override
+  Future<bool?> setGray(int level) async{
+    final start = await methodChannel.invokeMethod<bool>('setGray',{"level":level});
+    return start;
+  }
 }

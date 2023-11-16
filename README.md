@@ -44,11 +44,11 @@ android:name="pax.plugin.pki.parhamkish.vakili.pax_player.PaxApp"
 - [✅] Get CardInfo => use getCardNumber
 - [✅] Get Beep device => use getBeep
 - [✅] Set Device Nav Bar enable => use setEnableNavBar set true
-
+- [✅] Get BarcodeInfo => use getScanBarcode
 - [ ] get all device info
 - [ ] call printer
 - [ ] device setting
-- [ ] call scanner 
+- [ ] call all scanner methods 
 
 
 ## If you have an Pax Terminal printer and need help with integration process, just Contact me

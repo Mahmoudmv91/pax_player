@@ -29,6 +29,10 @@ abstract class PaxPlayerPlatform extends PlatformInterface {
     throw UnimplementedError('getCardNumber has not been implemented.');
   }
 
+  Future<String?> getScanBarcode() {
+    throw UnimplementedError('getCardNumber has not been implemented.');
+  }
+
   Future<String?> getDeviceInfo() {
     throw UnimplementedError('getDeviceInfo has not been implemented.');
   }
@@ -44,24 +48,31 @@ abstract class PaxPlayerPlatform extends PlatformInterface {
   Future<bool?> initPrinter() {
     throw UnimplementedError('initPrinter has not been implemented.');
   }
+
   Future<String?> getStatusPrinter() {
     throw UnimplementedError('getStatusPrinter has not been implemented.');
   }
+
   Future<String?> printReceipt() {
     throw UnimplementedError('printReceipt has not been implemented.');
   }
+
   Future<String?> printReceiptWithQr() {
     throw UnimplementedError('printReceiptWithQr has not been implemented.');
   }
+
   Future<bool?> printBitmap(Uint8List bitmap) {
     throw UnimplementedError('printBitmap has not been implemented.');
   }
+
   Future<bool?> printNormal() {
     throw UnimplementedError('printNormal has not been implemented.');
   }
+
   Future<String?> start() {
     throw UnimplementedError('start has not been implemented.');
   }
+
   Future<bool?> setGray(int level) {
     throw UnimplementedError('setGray has not been implemented.');
   }
